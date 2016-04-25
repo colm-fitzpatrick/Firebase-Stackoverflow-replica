@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="CSS/style.css"> <!--reference to css style sheet-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!--reference to bootstrap-->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <!--reference to JavaScript-->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<title>C12532977 Colm Fitzpatrick</title>
+		
+		<script>
+			var ref = new Firebase('https://radiant-torch-4031.firebaseio.com/');
+			var authData = ref.getAuth(); // get authData for logged in user
+			
+			if (authData) { // if signed in in print confirmation
+			  console.log("User " + authData.uid + " is logged in with " + authData.provider);
+			} else { // if not signed in print message and redirect to login page
+			  window.alert("Please Sign In Or Make An Account");
+			  location.href = "index.html"
+			}
+			
+			var userid = authData.uid; // get user id from the authData
+			var username = authData.google.displayName; // get username from authData
+			var amOnline = new Firebase('https://radiant-torch-4031.firebaseio.com/.info/connected'); // parent containing connected user info
+			var userRef = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'+userid); // ref for inserting online users
+			var onlineref = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'); // ref for reading online users
+			
+			amOnline.on('value', function(snapshot) { // taken from https://www.firebase.com/blog/2013-06-17-howto-build-a-presence-system.html
+			  if (snapshot.val()) {
+				userRef.onDisconnect().remove(); // remove user from users parent when logging off
+				userRef.set(username); // add user to users parent when online
+			  }
+			});
+	
+			function logout(){ // logout user and redirect to login page
+				ref.unauth();
+				location.href = "index.html"
+			}
+			function welcomeuser(){ // retrieve logged in user information and present it on the welcome page
+				var welcome = authData.google.displayName;
+				var image = authData.google.profileImageURL; // getting users profile picture url
+				var info = '<h2> '+welcome+' welcome to StackUnderFlow! </h2><p>Post Computer Science related questions and receive answers from other users!<p/>'
+				document.getElementById("profimage").innerHTML = '<img src="'+image+'" id= "imagep" class = "img-circle" alt="pimage"">'; // adding content to profimage div
+				document.getElementById("welcomename").innerHTML = "Welcome " + welcome;
+				document.getElementById("info").innerHTML = info;
+			}
+			// Attach an asynchronous callback to read the data at our posts reference
+			function onlineusers() { // checking for updates on logged in users
+				onlineref.on('child_added', function(snapshot) { // when a change happens
+					var message = snapshot.val(); // get values
+					displayUsers(message); // pass to function
+				});
+			}
+			function displayUsers(message) { // display updated content on page
+			$('<p>').text(message).prepend('</p><br>').appendTo($('#onlineusers'));
+			$('#onlineusers')[0].scrollTop = $('#onlineusers')[0].scrollHeight;
+
+			};
+		</script>
+	</head>
+	<body onload="welcomeuser(); onlineusers();"> <!--when the page loads run welcomeuser() and onlineusers() --> 
+		<script src="JavaScripts/portfolio.js"></script> <!--defining location of JavaScript functions-->
+			<nav class="navbar navbar-inverse navbar-static-top"> <!--bootstrap navbar-->
+				<div class="container-fluid"> <!--responsive container-->
+					<!--menu-->
+					<div id="navbardiv">
+						<ul class="nav navbar-nav"> <!--bootstrap navbar-->
+							<li class="active"><a href="index.html" class="brand">StackUnderFlow</a><li>
+							<li><a href="welcome.html" class="brand">Welcome Page</a><li>	
+							<li><a href="questions.html">Ask A Question</a></li>
+							<li><a href="allquestions.html">My Questions</a></li>
+							<li><a href="subjectarea.html">Browse Questions By Category</a></li>
+						</ul>
+								
+							<!--right-->
+						<div class="nav navbar-nav navbar-right"> <!--navbar right element-->
+							<div id="welcomename"></div>
+							<div id="logout">
+								<a href="#" onclick="logout()">Logout</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		<div class="container-fluid">
+			<div class="jumbotron"> <!--responsive bootstrap class for holding text-->
+				<div id="profimage"></div>
+				<div id="info"></div>
+				<div id="onlineusers">	
+				<h2 style='text-decoration: underline;'> Online Users </h2>
+				</div>
+			</div>
+		</div>
+		<nav class="navbar navbar-inverse navbar-fixed-bottom"> <!--bootstrap navbar for footer-->
+			<div class="container-fluid">
+				<div id="footer"> <!--HTML5 schematic element for footers-->
+					<p class="text-muted credit">COPY RIGHT COLM FITZPATRICK</p>
+				</div>
+			</div>
+		</nav>
+	</body>
+</html>

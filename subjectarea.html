@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="CSS/style.css"> <!--reference to css style sheet-->
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!--reference to bootstrap-->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <!--reference to JavaScript-->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<title>C12532977 Colm Fitzpatrick</title>
+		
+		<script>
+			var ref = new Firebase('https://radiant-torch-4031.firebaseio.com/');
+			var authData = ref.getAuth(); // get authData for logged in user
+			
+			if (authData) { // if signed in in print confirmation
+			  console.log("User " + authData.uid + " is logged in with " + authData.provider);
+			} else { // if not signed in print message and redirect to login page
+			  window.alert("Please Sign In Or Make An Account");
+			  location.href = "index.html"
+			}
+			
+			var userid = authData.uid; // get user id from the authData
+			var amOnline = new Firebase('https://radiant-torch-4031.firebaseio.com/.info/connected'); // parent containing connected user info
+			var userRef = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'+userid); // ref for inserting online users
+			
+			amOnline.on('value', function(snapshot) { // taken from https://www.firebase.com/blog/2013-06-17-howto-build-a-presence-system.html
+			  if (snapshot.val()) {
+				userRef.onDisconnect().remove(); // remove user from users parent when logging off
+			  }
+			});
+			
+			// Attach an asynchronous callback to read the data at our posts reference
+			function showSubjects(){ // function to show categories
+				var myDataRef = new Firebase('https://radiant-torch-4031.firebaseio.com/subjects'); // reference to subjects where categories are stored
+				myDataRef.on('child_added', function(snapshot) { // listen for changes in the parent
+					var message = snapshot.val(); 
+					displayChatMessage(message.subject); // send retrieved data to function to display 
+				});
+			}
+			function displayChatMessage(subject) { // function to display updated values in the form of a list
+				var temp = '<a href="viewquestions.html?'+ subject +'" class="list-group-item">';
+				$(temp).text(subject).prepend($('</a><br><br>')).appendTo($('#messagesDiv'));
+				$('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+
+			};
+
+			function logout(){ // logout user and redirect to login page
+				ref.unauth();
+				location.href = "index.html"
+			}
+			function welcomeuser(){ // function to display dynamic welcome message in navbar
+				var welcome = authData.google.displayName;
+				document.getElementById("welcomename").innerHTML = "Welcome " + welcome;
+			}
+		</script>
+	</head>
+	<body onload="welcomeuser(); showSubjects();">
+		<script src="JavaScript/portfolio.js">
+		</script> <!--defining location of JavaScript functions-->
+			<nav class="navbar navbar-inverse navbar-static-top"> <!--bootstrap navbar-->
+				<div class="container-fluid"> <!--responsive container-->
+					<!--menu-->
+					<div id="navbardiv">
+						<ul class="nav navbar-nav"> <!--bootstrap navbar-->
+							<li class="active"><a href="index.html" class="brand">StackUnderFlow</a><li>
+							<li><a href="welcome.html" class="brand">Welcome Page</a><li>	
+							<li><a href="questions.html">Ask A Question</a></li>
+							<li><a href="allquestions.html">My Questions</a></li>
+							<li><a href="subjectarea.html">Browse Questions By Category</a></li>
+						</ul>
+								
+							<!--right-->
+						<div class="nav navbar-nav navbar-right"> <!--navbar right element-->
+							<div class="list-group" id="welcomename"></div>
+							<div id="logout">
+								<a href="#" onclick="logout()">Logout</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		<div class="container-fluid">
+			<div class="jumbotron"> <!--responsive bootstrap class for holding text-->
+				<h1 class="text-center loginform-title">Categories</h1>
+				<div id='messagesDiv'>
+				</div>
+			</div>
+		</div>
+		<nav class="navbar navbar-inverse navbar-fixed-bottom"> <!--bootstrap navbar for footer-->
+			<div class="container-fluid">
+				<div id="footer"> <!--HTML5 schematic element for footers-->
+					<p class="text-muted credit">COPY RIGHT COLM FITZPATRICK</p>
+				</div>
+			</div>
+		</nav>
+	</body>
+</html>

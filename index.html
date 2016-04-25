@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="CSS/style.css"> <!--reference to css style sheet-->
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!--reference to bootstrap-->
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <!--reference to JavaScript-->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script> <!--reference to Firebase JavaScript-->
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<title>C12532977 Colm Fitzpatrick</title>
+	</head>
+	<script>
+	function gsignin(){ // function for google signin functionality 
+	var ref = new Firebase('https://radiant-torch-4031.firebaseio.com'); // reference to firebase database
+	ref.authWithOAuthPopup("google", function(error, authData) { // google signin pop. returns error if login failed and authdata if successful
+	  if (error) {
+		console.log("Login Failed!", error);
+	  } else {
+		console.log("Authenticated successfully with payload:", authData);
+		//document.location = "welcome.php"; // if successful redirect to logged in user area
+	  }
+	},
+	{
+		remember: "sessionOnly", // remember while the browser is open
+		scope: "email"
+	});
+	}
+	</script>
+	<body>
+		<script src="JavaScripts/portfolio.js"></script> <!--defining location of JavaScript functions-->
+			<nav class="navbar navbar-inverse navbar-static-top"> <!--bootstrap navbar-->
+				<div class="container-fluid"> <!--responsive container-->
+					<!--menu-->
+					<div id="navbardiv">
+						<ul class="nav navbar-nav"> <!--bootstrap navbar-->
+							<li class="active"><a href="index.html" class="brand">StackUnderFlow</a><li>
+							<li><a href="welcome.html" class="brand">Welcome Page</a><li>	
+							<li><a href="questions.html">Ask A Question</a></li>
+							<li><a href="allquestions.html">My Questions</a></li>
+							<li><a href="subjectarea.html">Browse Questions By Category</a></li>
+						</ul>
+								
+							<!--right-->
+						<div class="nav navbar-nav navbar-right"> <!--navbar right element-->
+						</div>
+					</div>
+				</div>
+			</nav>
+			<div class="container-fluid">
+				<div class="jumbotron"> <!--responsive bootstrap class for holding text-->
+					<div id="compscpic">
+						<img src="images/cs.png" class = "img-circle" alt="csimage">
+					</div>
+					<div class="row">
+						<div id="signinbutton">
+							<h1 class="text-center loginform-title">Sign In</h1>
+							<img src="images/signbutton.png" href="welcome.php" id="signinpic" alt="signin" onclick="gsignin()"> <!--google signin image with onclick for signin function-->
+						</div>
+					</div>
+				</div>
+			</div>
+			<nav class="navbar navbar-inverse navbar-fixed-bottom"> <!--bootstrap navbar for footer-->
+				<div class="container-fluid">
+					<div id="footer"> <!--HTML5 schematic element for footers-->
+						<p class="text-muted credit">COPY RIGHT COLM FITZPATRICK</p>
+					</div>
+				</div>
+			</nav>
+		</div>
+	</body>
+</html>

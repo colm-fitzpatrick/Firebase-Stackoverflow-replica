@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="CSS/style.css"> <!--reference to css style sheet-->
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!--reference to bootstrap-->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <!--reference to JavaScript-->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<title>C12532977 Colm Fitzpatrick</title>
+		
+		<script>
+			var ref = new Firebase('https://radiant-torch-4031.firebaseio.com/');
+			var authData = ref.getAuth(); // get authData for logged in user
+			var passedsub;
+			
+			if (authData) { // if signed in in print confirmation
+			  console.log("User " + authData.uid + " is logged in with " + authData.provider);
+			} else { // if not signed in print message and redirect to login page
+			  window.alert("Please Sign In Or Make An Account");
+			  location.href = "index.html";
+			}
+			
+			var formData = location.search; // taken from http://www.webdeveloper.com/forum/showthread.php?232612-Pass-Variables-from-one-page-to-another-JAVASCRIPT-HTML
+			formData = formData.substring(1, formData.length); // used to obtain passed value from url
+
+			while (formData.indexOf("+") != -1) {
+			 formData = formData.replace("+", " "); // replace + with space 
+			}
+
+			formData = unescape(formData);
+			var formArray = formData.split("&");
+
+			for (var i=0; i < formArray.length; ++i) {
+			 passedsub = formArray[i];
+			}
+			
+			function pass(){
+			 document.getElementById("title").innerHTML = passedsub;
+			 document.getElementById('subjecttext').value = passedsub;
+			}
+			
+			var userid = authData.uid; // get user id from the authData
+			var ref2 = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'+userid);
+			var amOnline = new Firebase('https://radiant-torch-4031.firebaseio.com/.info/connected'); // parent containing connected user info
+			var userRef = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'+userid); // ref for inserting online users
+			
+			amOnline.on('value', function(snapshot) { // taken from https://www.firebase.com/blog/2013-06-17-howto-build-a-presence-system.html
+			  if (snapshot.val()) {
+				userRef.onDisconnect().remove(); // remove user from users parent when logging off
+			  }
+			});
+			
+			// Attach an asynchronous callback to read the data at our posts reference
+			function viewQuestion() { // function to listen for changes in questions for a certain category
+				var q = $('#subjecttext').val(); // category is retreived from hidden form
+				q = q.replace(/\s+/g, ''); // removes spaces from category
+				var myDataRef = new Firebase('https://radiant-torch-4031.firebaseio.com/question/'+q+'/'); // ref to category in question
+				myDataRef.on('child_added', function(snapshot) {
+					var message = snapshot.val(); // get values
+					displayQ(message.question); // pass to function
+				});
+			}
+			function displayQ(question) { // display updated content on page in the form of a list
+				var temp = '<a href="questionarea.html?' + question +'" class="list-group-item">'; // when link is clicked it will open questionarea and will send the question with it
+				$(temp).text(question).prepend($('</a><br><br>')).appendTo($('#messagesDiv'));
+				$('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+
+			};
+
+			function logout(){ // logout user and redirect to login page
+				ref.unauth();
+				location.href = "index.html"
+			}
+			function welcomeuser(){ // function to display dynamic welcome message in navbar
+				var welcome = authData.google.displayName;
+				document.getElementById("welcomename").innerHTML = "Welcome " + welcome;
+			}
+		</script>
+	</head>
+	<body onload="pass(); welcomeuser(); viewQuestion();">
+		<script src="JavaScript/portfolio.js">
+		</script> <!--defining location of JavaScript functions-->
+			<nav class="navbar navbar-inverse navbar-static-top"> <!--bootstrap navbar-->
+				<div class="container-fluid"> <!--responsive container-->
+					<!--menu-->
+					<div id="navbardiv">
+						<ul class="nav navbar-nav"> <!--bootstrap navbar-->
+							<li class="active"><a href="index.html" class="brand">StackUnderFlow</a><li>
+							<li><a href="welcome.html" class="brand">Welcome Page</a><li>	
+							<li><a href="questions.html">Ask A Question</a></li>
+							<li><a href="allquestions.html">My Questions</a></li>
+							<li><a href="subjectarea.html">Browse Questions By Category</a></li>
+						</ul>
+								
+							<!--right-->
+						<div class="nav navbar-nav navbar-right"> <!--navbar right element-->
+							<div id="welcomename"></div>
+							<div id="logout">
+								<a href="#" onclick="logout()">Logout</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		<div class="container-fluid">
+			<div class="jumbotron"> <!--responsive bootstrap class for holding text-->
+				<h1 id="title" class="text-center loginform-title"></h1> <!--retreiving category from category section-->
+				<form name="subjectform">
+				<input type="hidden" id="subjecttext">
+				</form>
+				<div class="list-group" id='messagesDiv'>
+				</div>
+			</div>
+		</div>
+		<nav class="navbar navbar-inverse navbar-fixed-bottom"> <!--bootstrap navbar for footer-->
+			<div class="container-fluid">
+				<div id="footer"> <!--HTML5 schematic element for footers-->
+					<p class="text-muted credit">COPY RIGHT COLM FITZPATRICK</p>
+				</div>
+			</div>
+		</nav>
+	</body>
+</html>

@@ -1,0 +1,190 @@
+#footer
+{
+	color:white;
+	text-align:center;
+	font-family:arial;
+	font-weight:bold;
+	font-size:12px;
+	padding-top:25px;
+}
+
+#ftext
+{
+	position:relative;
+	top:0px;
+	left:500px;
+	color:#CCFFCC;
+}
+
+#signinform
+{
+	padding-right:5px;
+}
+.form-signin
+{
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-control
+{
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.form-signin .form-control:focus
+{
+    z-index: 2;
+}
+.form-signin input[type="text"]
+{
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.form-signin input[type="password"]
+{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.loginform-title
+{
+    color: #555;
+    font-size: 18px;
+    font-weight: 400;
+    display: block;
+}
+.new-account
+{
+    display: block;
+    margin-top: 10px;
+}
+
+#signinpic
+{
+width:304px;
+height:50px;
+padding-left:10px;
+padding-right:0px;
+}
+
+#signinb
+{
+width:304px;
+height:50px;
+padding-left:35px;
+padding-right:0px;
+}
+
+#form-askq
+{
+padding-right:200px;
+padding-left:0px;
+}
+
+#welcomename
+{
+	color: white;
+	padding-right: 10px;
+}
+
+#logout
+{
+	padding-left: 120px;
+}
+
+#messagesDiv
+{
+	font-size: 30px;
+	text-align:center;
+}
+
+.status-upload
+{
+	width: 400px;
+    height: 100px;
+    position: relative;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+#messageInput
+{
+	width: 400px;
+	position:relative;
+}
+#commentbutton
+{  
+    width:100px;
+	margin: -20px -50px; 
+    position:relative;
+    top:50%; 
+    left:50%;
+}
+
+#commentsection
+{
+	border-style: groove;
+	border-width: 2px;
+
+	background-color:white;
+}
+#comment
+{
+	overflow:auto;
+	height:250px;
+	width:1000px;
+	word-break: break-all;
+	padding-left:200px;
+}
+
+#imagep
+{
+	width:150px;
+	height:150px;
+}
+#imagep2
+{
+	width:50px;
+	height:50px;
+}
+
+#titleid
+{
+	height:50px;
+	width:500px;
+}
+
+#questionid
+{
+	height:200px;
+	width:500px;
+}
+#signinbutton
+{
+	float: right;
+	padding-right: 100px;
+	padding-top: 100px;
+}
+
+#compscpic
+{
+	float: left;
+}
+
+a.button { /* taken from http://stackoverflow.com/questions/2906582/how-to-create-an-html-button-that-acts-like-a-link */
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+}

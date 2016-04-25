@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="CSS/style.css"> <!--reference to css style sheet-->
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!--reference to bootstrap-->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <!--reference to JavaScript-->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<title>C12532977 Colm Fitzpatrick</title>
+		
+		<script>
+			
+		var ref = new Firebase('https://radiant-torch-4031.firebaseio.com/');
+		var authData = ref.getAuth(); // get authData for logged in user
+		var passedquest;
+		
+		var formData = location.search; // taken from http://www.webdeveloper.com/forum/showthread.php?232612-Pass-Variables-from-one-page-to-another-JAVASCRIPT-HTML
+		formData = formData.substring(1, formData.length);  // used to obtain passed value from url
+
+		while (formData.indexOf("+") != -1) {
+		 formData = formData.replace("+", " "); // replace + with space
+		}
+
+		formData = unescape(formData);
+		var formArray = formData.split("&");
+
+		for (var i=0; i < formArray.length; ++i) {
+		 passedquest = formArray[i];
+		 var mark = "?";
+		 var passedquest2 = mark.concat(passedquest);
+		}
+		
+		if (authData) { // if signed in in print confirmation
+		  console.log("User " + authData.uid + " is logged in with " + authData.provider);
+		   document.getElementById("userinfo").innerHTML = ("User " + authData.uid + " is logged in with " + authData.provider);
+		} else { // if not signed in print message and redirect to login page
+		  window.alert("Please Sign In Or Make An Account");
+		  document.location = "index.php";
+		}
+		
+		function pass(){
+		 document.getElementById("questiontitle").innerHTML = passedquest;
+		 document.getElementById('questiontext').value = passedquest;
+		}
+		
+		var userid = authData.uid; // get user id from the authData
+		var amOnline = new Firebase('https://radiant-torch-4031.firebaseio.com/.info/connected'); // parent containing connected user info
+		var userRef = new Firebase('https://radiant-torch-4031.firebaseio.com/users/'+userid); // ref for inserting online users
+		
+		amOnline.on('value', function(snapshot) { // taken from https://www.firebase.com/blog/2013-06-17-howto-build-a-presence-system.html
+		  if (snapshot.val()) {
+			userRef.onDisconnect().remove(); // remove user from users parent when logging off
+		  }
+		});
+		// Attach an asynchronous callback to read the data at our posts reference
+		function showcomments(){ // function to listen for changes on comments
+			var q = $('#questiontext').val(); // gets question from hidden field
+			q = q.replace(/\s+/g, ''); // removes spaces from the question
+			var myRef = new Firebase('https://radiant-torch-4031.firebaseio.com/answer/'+q+'/');
+			myRef.on('child_added', function(snapshot) { // when a change is made
+				var message = snapshot.val();
+				displayComments(message.comment, message.user); // pass to function to be displayed
+			});	
+		}
+		function displayComments(comment,user) { // display updated content in the form of a list
+			$('<a class="list-group-item">').text(comment).prepend(user + ' says : ').prepend('</a>').appendTo($('#comment'));
+			$('#comment')[0].scrollTop = $('#comment')[0].scrollHeight;
+		};
+
+		function logout(){ // logout user and redirect to login page
+			ref.unauth();
+			window.location = "index.html";
+		}
+		
+		function addComment(){ // function to add a comment to a question
+			
+			var myDataRef = new Firebase('https://radiant-torch-4031.firebaseio.com/answer'); // reference to answer parent
+			var questi = $('#questiontext').val(); // gets question from hidden field 
+			questi = questi.replace(/\s+/g, ''); // gets rid of spaces
+			var questRef = myDataRef.child(questi); // creates child with the question as its name
+			var text = $('#messageInput').val(); // get comment from user input
+			questRef.push({user: authData.google.displayName,comment: text}); // adds username and comment to question name child in answer
+			$('#messageInput').val(''); // clear comment input box
+		}
+		function welcomeuser(){ // function to display dynamic welcome message in navbar
+			var welcome = authData.google.displayName;
+			document.getElementById("welcomename").innerHTML = "Welcome " + welcome;
+		}
+		</script>
+	</head>
+	<body onload="pass(); welcomeuser(); showcomments();">
+		<script src="JavaScript/portfolio.js"></script> <!--defining location of JavaScript functions-->
+			<nav class="navbar navbar-inverse navbar-static-top"> <!--bootstrap navbar-->
+				<div class="container-fluid"> <!--responsive container-->
+					<!--menu-->
+					<div id="navbardiv">
+						<ul class="nav navbar-nav"> <!--bootstrap navbar-->
+							<li class="active"><a href="index.html" class="brand">StackUnderFlow</a><li>
+							<li><a href="welcome.html" class="brand">Welcome Page</a><li>	
+							<li><a href="questions.html">Ask A Question</a></li>
+							<li><a href="allquestions.html">My Questions</a></li>
+							<li><a href="subjectarea.html">Browse Questions By Category</a></li>
+						</ul>
+								
+							<!--right-->
+						<div class="nav navbar-nav navbar-right"> <!--navbar right element-->
+							<div id="welcomename"></div>
+							<div id="logout">
+								<a href="#" onclick="logout()">Logout</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		<div class="container-fluid">
+			<div class="jumbotron"> <!--responsive bootstrap class for holding text-->
+				<div class="text-center loginform-title" id="questiontitle"><h1>?</h1></div>
+				<div class="list-group" id='comment'></div>
+				<div class="widget-area no-padding blank">
+					<div class="status-upload">
+						<form>
+							<textarea type='text' id='messageInput' placeholder="Write your comment here" ></textarea>
+							<input type="hidden" id="questiontext"> <!--retrieving question from viewquestions page -->
+							<a class="button" id="commentbutton" href="questionarea.html" onclick="addComment();location.href=this.href+passedquest2;return false;">Post</a>
+						</form>
+					</div><!-- Status Upload  -->
+				</div><!-- Widget Area -->
+			</div>
+		</div>
+		<nav class="navbar navbar-inverse navbar-fixed-bottom"> <!--bootstrap navbar for footer-->
+			<div class="container-fluid">
+				<div id="footer"> <!--HTML5 schematic element for footers-->
+					<p class="text-muted credit">COPY RIGHT COLM FITZPATRICK</p>
+				</div>
+			</div>
+		</nav>
+	</body>
+</html>
